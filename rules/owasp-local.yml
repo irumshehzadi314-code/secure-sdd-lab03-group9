@@ -1,0 +1,53 @@
+rules:
+  - id: hardcoded-secret
+    languages: [python]
+    severity: ERROR
+    message: Hard-coded secret in source. Read it from an environment variable.
+    patterns:
+      - pattern-either:
+          - pattern: $X = "..."
+      - metavariable-regex:
+          metavariable: $X
+          regex: (?i).*(secret|key|token|password).*
+
+  - id: weak-hash-md5
+    languages: [python]
+    severity: ERROR
+    message: MD5 is weak. Use bcrypt/scrypt or werkzeug generate_password_hash.
+    pattern: hashlib.md5(...)
+
+  - id: sql-string-formatting
+    languages: [python]
+    severity: ERROR
+    message: SQL built by string formatting. Use parameterised queries.
+    patterns:
+      - pattern-either:
+          - pattern: $DB.execute(f"...{$X}...")
+          - pattern: $DB.execute("..." % ...)
+          - pattern: $DB.execute("..." + ...)
+
+  - id: command-injection-shell
+    languages: [python]
+    severity: ERROR
+    message: shell=True with user input. Use a list of arguments and allow-list input.
+    pattern: subprocess.$F(..., shell=True, ...)
+
+  - id: path-traversal-sendfile
+    languages: [python]
+    severity: ERROR
+    message: send_file with user input. Use send_from_directory and confine the path.
+    patterns:
+      - pattern: send_file("..." + $X)
+      - pattern: send_file("..." + $X + "...")
+
+  - id: debug-true
+    languages: [python]
+    severity: WARNING
+    message: Debug mode enabled. Set debug=False and bind to 127.0.0.1.
+    pattern: app.run(..., debug=True, ...)
+
+  - id: bind-all-interfaces
+    languages: [python]
+    severity: WARNING
+    message: Binding to 0.0.0.0 exposes the app. Use 127.0.0.1.
+    pattern: app.run(host="0.0.0.0", ...)
