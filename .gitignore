@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+venv/
+.venv/
+env/
+
+# SQLite Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Windows/Mac OS files
+.DS_Store
+Thumbs.db
+
+# Semgrep cache
+.semgrep/
